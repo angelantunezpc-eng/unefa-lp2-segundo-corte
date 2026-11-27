@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package unefa.lp2.billing.v1;
+
+option go_package = "unefa-lp2/lab5_ddd_grpc_y_resiliencia/proto/billingv1;billingv1";
+
+service ConvergentBillingService {
+  rpc AuthorizeAndChargeDataSession (ChargeDataSessionRequest) returns (ChargeDataSessionResponse);
+  rpc StreamCellTelemetryEvents (TelemetryStreamRequest) returns (stream CellTelemetryEvent);
+}
+
+message ChargeDataSessionRequest {
+  string idempotency_key = 1;
+  string subscriber_id = 2;
+  string msisdn = 3;
+  string cell_id = 4;
+  int64 data_mb = 5;
+  int64 amount_cents = 6;
+  string currency = 7;
+}
+
+message ChargeDataSessionResponse {
+  string idempotency_key = 1;
+  string transaction_id = 2;
+  bool authorized = 3;
+  int64 remaining_balance_cents = 4;
+  string status_message = 5;
+}
+
+message TelemetryStreamRequest {
+  string idempotency_key = 1;
+  string cell_id = 2;
+  int64 interval_ms = 3;
+}
+
+message CellTelemetryEvent {
+  string idempotency_key = 1;
+  string cell_id = 2;
+  int64 timestamp_unix_ms = 3;
+  int64 active_sessions = 4;
+  int64 throughput_kbps = 5;
+  int64 billed_cents = 6;
+}
